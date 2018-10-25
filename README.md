@@ -23,7 +23,7 @@ The dataset-level proximity models training datasets consisting of 203 OpenML da
 * **openml_15ds_attributes_numeric_index.csv:** A description of the numeric attributes in the 203 OpenML datasets. This includes the attribute name, dataset name and ID, and the meta-features collected about the attribute. Each row is an attribute from the 203 OpenML datasets used to train the dataset-level models.
 
 
-To retrieve the original datasets from OpenML using the APIs provided by them and the dataset IDs from our CSV files, please refer to the [OpenML API guide](https://www.openml.org/guide).
+To retrieve the original datasets from OpenML using the APIs provided by them and the dataset IDs from our CSV files, please refer to the [OpenML API guide](https://openml.github.io/OpenML/Java-guide/).
 
 
 ## Built With
