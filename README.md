@@ -5,7 +5,7 @@ This page is dedicated for the Proximity Mining for Holistic Schema Matching Rec
 
 ## Getting Started
 
-We provide the annotated ground-truth used in our experiments for building the attribute-level proximtiy models (OML01 - The attribute-level annotated 15 DS) under the folder "OML01" and the dataset-level proximtiy models (OML02 - The dataset-level annotated 203 DS) under the folder "OML02". We provide the main indexes and matching output in the Comma Separated Values (CSV) format. The description of the datasets in each folder is as follows:
+We provide the annotated ground-truth used in our experiments for building the attribute-level proximtiy models (OML01 - The attribute-level annotated 15 DS) under the folder "OML01" and the dataset-level proximtiy models (OML02 - The dataset-level annotated 203 DS) under the folder "OML02". We provide the main indexes and matching output in the Comma Separated Values (CSV) format. The description of the data files in each folder is as follows:
 
 ### OML01
 The attribute-level proximity models training datasets consisting of 15 OpenML datasets and the descriptions of the datasets and their attributes.
