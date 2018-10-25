@@ -12,12 +12,14 @@ The attribute-level proximity models training datasets consisting of 15 OpenML d
 * openml_15ds_datasets_index.csv: The description of the OpenML datasets, the OpenML ID and the meta-features collected about the datasets using the data profiling techniques. Each row is a dataset from OpenML.
 * openml_15ds_attributes_nominal_index.csv: A description of the nominal attributes in the 15 OpenML datasets. This incldues the attribute name, dataset name and ID, and the meta-features collected about the attribute. Each row is an attribute from the 15 OpenML datasets used to train the attribute-level models.
 * openml_15ds_attributes_nominal_matching.csv:  The matching of all nominal attribute pairs from the training datasets. This includes the names and IDs of both attributes and their datasets, the meta-features computed distances, the Levenshtein distance of the names of the attributes (name_dist), the assigned similarity score assigned by the final proximity model (similarity_score), and whether both attributes have been annotated as matching attributes '1' or unmatching attributes '0' by the human annotators (attributes_match). Each row consists of an attribute pair from 2 different datasets.
+* openml_15ds_attributes_numeric_index.csv: A description of the numeric attributes in the 15 OpenML datasets. This incldues the attribute name, dataset name and ID, and the meta-features collected about the attribute. Each row is an attribute from the 15 OpenML datasets used to train the attribute-level models.
+* openml_15ds_attributes_numeric_matching.csv:  The matching of all numeric attribute pairs from the training datasets. This includes the names and IDs of both attributes and their datasets, the meta-features computed distances, the Levenshtein distance of the names of the attributes (name_dist), the assigned similarity score assigned by the final proximity model (similarity_score), and whether both attributes have been annotated as matching attributes '1' or unmatching attributes '0' by the human annotators (attributes_match). Each row consists of an attribute pair from 2 different datasets.
+
+### OML02
 
 
 * The "index" CSV files: They store the original index of datasets collected for the training set or the testing set in the experiments. It comes with the OpenML dataset ID, the dataset name, and the meta-features collected for each dataset.
 * The "matching" CSV files: They store the meta-features' distances between all pairs of datasets in the training set or the testing set of the experiments. It comes with the OpenML dataset ID, the dataset name, the meta-features distances between the pair in each row, and the ground-truth of the relationships between the datasets in the pair: datesets_subject_main_match (1 or 0) for the Rel(d1,d2) relationship and datesets_duplicates_match (1 or 0) for the Dup(d1,d2) relationship.
-
-### OML02
 
 
 To retrieve the original datasets from OpenML using the APIs provided by them and the dataset IDs (did) from our CSV files, please refer to the [OpenML API guide](https://www.openml.org/guide).
