@@ -7,6 +7,7 @@ This page is dedicated for the Proximity Mining for Holistic Schema Matching Rec
 
 We provide the annotated ground-truth used in our experiments for building the attribute-level proximtiy models (OML01 - The attribute-level annotated 15 DS) under the folder "OML01" and the dataset-level proximtiy models (OML02 - The dataset-level annotated 203 DS) under the folder "OML02". We provide the main indexes and matching output as in the Comma Separated Values (CSV) format. The description of the datasets in each folder is as follows:
 
+### OML01
 * The "index" CSV files: They store the original index of datasets collected for the training set or the testing set in the experiments. It comes with the OpenML dataset ID, the dataset name, and the meta-features collected for each dataset.
 * The "matching" CSV files: They store the meta-features' distances between all pairs of datasets in the training set or the testing set of the experiments. It comes with the OpenML dataset ID, the dataset name, the meta-features distances between the pair in each row, and the ground-truth of the relationships between the datasets in the pair: datesets_subject_main_match (1 or 0) for the Rel(d1,d2) relationship and datesets_duplicates_match (1 or 0) for the Dup(d1,d2) relationship.
 
