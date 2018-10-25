@@ -28,7 +28,7 @@ To retrieve the original datasets from OpenML using the APIs provided by them an
 
 ## Built With
 
-* [Java OpenML API](https://www.openml.org/guide#!java)
+* [Java OpenML API](https://openml.github.io/OpenML/Java-guide/)
 * [Postgres DB](https://www.postgresql.org/)
 * [WEKA Machine Learning Environment](http://www.cs.waikato.ac.nz/ml/weka/)
 * [Apache Lucene](http://lucene.apache.org/)
