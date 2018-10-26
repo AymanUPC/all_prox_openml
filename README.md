@@ -1,5 +1,5 @@
 # Proximity Mining for Holistic Schema Matching Recommendation in the Data Lake (OpenML implementation)
-This page is dedicated for the Proximity Mining for Holistic Schema Matching Recommendation in Data Lakes project by the [DTIM Research Group](http://www.essi.upc.edu/dtim) of the ESSI department, UPC. We provide here the main datasets and sources for experimental evaluation of our techniques on [OpenML](https://www.openml.org) data.
+This page is dedicated for the Proximity Mining for Holistic Schema Matching Recommendation in Data Lakes project by the [DTIM Research Group](http://www.essi.upc.edu/dtim) of the ESSI department, UPC. We provide here the main benchmark datasets and sources for experimental evaluation of techniques for dataset proximity mining and dataset similarity on [OpenML](https://www.openml.org) data.
 
 
 
