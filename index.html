@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Proximity Mining for Pre-Filtering Schema Matching Appendix</title>
+
+</head>
+
+<body>
+
+<h1 id="intro">Introduction</h1>
+<p>This appendix accompanies the paper <i>"Keeping the Data Lake in Form: Proximity Mining for Pre-filtering Schema Matching"</i>. We examine the performance of our proposed schema matching pre-filtering approach using the sample datasets from the <a href="https://www.openml.org">OpenML</a> Data Lake (DL). The sample annotated data used in the experiments can be retrieved from: <a href="https://github.com/AymanUPC/all_prox_openml">our project's github page.</a><br>
+
+<p>This webpage is created by the <a href="http://www.essi.upc.edu/dtim/"><b>Database Technologies and Information Management Group</b></a>, UPC, BarcelonaTech and the <a href="http://cs.ulb.ac.be/public/start"><b>Department of Computer and Decision Engineering</b></a>, ULB, Brussels.</p>
+
+<br>
+
+<p><b>Table of Contents:</b>
+<ul style="list-style-type:square;">
+  <li><a href="#description">Appendix Description</a></li>
+  <li><a href="#false_negatives">False Negatives</a></li>
+  <li><a href="#false_positives">False Positives</a></li>
+  <li><a href="#true_positives">True Positives</a></li>
+</ul>
+</p>
+
+<hr>
+
+<h1 id="description">Appendix: Pre-filtering Experiment Analysis</h1>
+
+<p> In this appendix, we examine the cases in our experiments which led to correctly classified true positives or incorrectly classified false negatives or false positives. The incorrectly classified cases will be scrutinised in details to detect the reasons for our approach in failing in such cases, or whether those cases were falsely manually annotated by the contributors to the ground-truth for our experiment. False annotation can occur because the manual annotators depended on the textual descriptions provided by OpenML for each dataset. Those descriptions might describe a specific domain or subject-area, yet pairs of datasets falling under this subject-area might have disjoint information describing it (i.e., they do not store the same information in their attributes). As the annotators did not investigate the attribute metadata and only depended on the descriptions of the datasets, this can lead to the false annotations. The annotators were not allowed to investigate the attribute metadata to eliminate any possibility of bias towards our approach using the same metadata. This should keep the ground-truth independent from our approach leading to better valid results. </p>
+
+<p>We investigate the All-Prox model because it was the best performing proximity model in our experiments. This model utilises all the different types of metadata collected about datasets and their attributes. We select the results from the proximity cut-off threshold of 0.4 because it achieves top performing results in terms of the recall and efficiency-gain trade-off graph in our results (see Fig. 15 in the paper). <!--(See Fig.  \ref{fig:experiment2_results_a}).--></p>
+
+<p> We analyse the false negatives and the false positives. The goal of our schema matching pre-filtering approach is to minimise both false negatives and false positives in order to improve recall and precision respectively. We analyse the cases arising as false negatives and whether they are actually true negatives (i.e., have disjoint information) and the cases of false positives which ideally could be still filtered out. Finally, we analyse the cases of true positives and we identify the meta-features which helped our proximity model in correctly identifying those pairs.</p>
+
+<hr>
+
+<h2 id="false_negatives">1. False Negatives</h2>
+
+<p>We took a random sample of 30 false negative cases from the total 81 false negatives. In our experiments we had about 550 actual positive cases. At the threshold of '<i>T=0.4</i>' for the All-Prox model, 81 cases were not correctly classified as positive cases for schema matching. We analysed the details of those cases in <a href="#table_false_negatives"><i>Table 1</i></a><!--\ref{tab:all_prox_FN_cases_analysis_appendix}-->. Each row in the table lists a dataset pair which did not have a proximity score above the threshold of '<i>0.4</i>' although they were manually annotated to be related datasets under the same topic.</p>
+
+<p>In <a href="#table_false_negatives"><i>Table 1</i></a><!--\ref{tab:all_prox_FN_cases_analysis_appendix}-->, the columns are as follows:
+<ul>
+
+<li> <b>DS 1 ID:</b> The OpenML dataset unique identifier for accessing the first dataset's description page. This could be accessed by replacing the `X' symbols at the end of the URL: <i>https://www.openml.org/d/XXXX</i>.
+
+
+<li> <b>DS 2 ID:</b> The OpenML unique identifier for the second dataset.
+
+
+<li> <b>DS1 and DS2:</b> The names of the first and second dataset in the pair respectively.
+
+
+<li> <b>Topic:</b> the common subject-area classification for both datasets in the pair.
+
+
+<li> <b>att1 and att2:</b> the number of attributes in each dataset respectively.
+
+
+<li> <b>nom att 1 and nom att 2:</b> the number of nominal attributes in each dataset.
+
+
+<li> <b>num att 1 and num att 2:</b> the number of numeric attributes in each dataset.
+
+
+<li> <b>Nom Att M:</b> A list of nominal attributes from both datasets which have a matching data profile. Each attribute pair start with a `*' symbol followed by the attribute from the first dataset, then the `+' symbol, and finally the matching attribute from the second dataset. Each matching pairs of attributes follow the same structure and start on a new line. 
+
+
+<li> <b>Num Att M:</b> A list of numeric attributes from both datasets which have a matching data profile. It follows the same structure as the Nom Att M column.
+
+
+<li> <b>Rel?:</b> the final verdict whether the pairs of datasets really fall under the same topical category or not. This is based on manually analysing the attributes in each dataset, and checking if each attribute in the first dataset matches an attribute from the other dataset in terms of their `semantics'. Here we consider the actual meaning and description of each attribute and not just the data profiles. A value of `yes' means that both datasets have many semantically related attributes (a couple or more) and a value of `no' means not. <i>Note: although a dataset pair might have attributes with matching data profiles, yet, the semantic meaning of the attributes might be different based on their description. For the result in this column, we also consider the semantic meanings of the attributes in our decision</i>.
+
+</ul>
+</p>
+
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg" id="table_false_negatives">
+  <caption><b><i>Table 1:</i></b> A list of randomly selected false-negative dataset pair cases from the All-Prox model in the OpenML experiment.</caption>
+<thead>
+  <tr>
+    <th class="tg-0lax"><b>DS 1 ID</b></th>
+    <th class="tg-0lax"><b>DS 2 ID</b></th>
+    <th class="tg-0lax"><b>DS1</b></th>
+    <th class="tg-0lax"><b>DS2</b></th>
+    <th class="tg-0lax"><b>Topic</b></th>
+    <th class="tg-0lax"><b>att 1</b></th>
+    <th class="tg-0lax"><b>att 2</b></th>
+    <th class="tg-0lax"><b>nom att 1</b></th>
+    <th class="tg-0lax"><b>nom att 2</b></th>
+    <th class="tg-0lax"><b>num att 1</b></th>
+    <th class="tg-0lax"><b>num att 2</b></th>
+    <th class="tg-0lax"><b>Nom Att M</b></th>
+    <th class="tg-0lax"><b>Num Att M</b></th>
+    <th class="tg-0lax"><b>Rel?</b></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">1097</td>
+    <td class="tg-0lax">liver- disorders</td>
+    <td class="tg-0lax">ICU</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">21</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">1524</td>
+    <td class="tg-0lax">lymph</td>
+    <td class="tg-0lax">vertebra column</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">19</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">19</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">18</td>
+    <td class="tg-0lax">1038</td>
+    <td class="tg-0lax">mfeat- morphological</td>
+    <td class="tg-0lax">gina_ agnostic</td>
+    <td class="tg-0lax">Digit Handwriting Recognition</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">971</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">970</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">23</td>
+    <td class="tg-0lax">329</td>
+    <td class="tg-0lax">cmc</td>
+    <td class="tg-0lax">hayes- roth</td>
+    <td class="tg-0lax">Citizen Census Data</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">*Wifes_ education + educational_ level</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">Yes</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">25</td>
+    <td class="tg-0lax">1510</td>
+    <td class="tg-0lax">colic</td>
+    <td class="tg-0lax">wdbc</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">28</td>
+    <td class="tg-0lax">31</td>
+    <td class="tg-0lax">20</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">30</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1 *Pulse + V3 abdomcentesis _ tot <br> 2 *al_ protein&nbsp;&nbsp;+ V13</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">34</td>
+    <td class="tg-0lax">43</td>
+    <td class="tg-0lax">post- operative patient- data</td>
+    <td class="tg-0lax">haber- man</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">34</td>
+    <td class="tg-0lax">222</td>
+    <td class="tg-0lax">post- operative patient- data</td>
+    <td class="tg-0lax">echo Months</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">55</td>
+    <td class="tg-0lax">1510</td>
+    <td class="tg-0lax">hepatitis</td>
+    <td class="tg-0lax">wdbc</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">20</td>
+    <td class="tg-0lax">31</td>
+    <td class="tg-0lax">14</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">30</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">*ALK_ PHOSPHATE&nbsp;&nbsp;+ V23</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">150</td>
+    <td class="tg-0lax">473</td>
+    <td class="tg-0lax">cover type</td>
+    <td class="tg-0lax">cjs</td>
+    <td class="tg-0lax">Plantation Measurements</td>
+    <td class="tg-0lax">55</td>
+    <td class="tg-0lax">35</td>
+    <td class="tg-0lax">45</td>
+    <td class="tg-0lax">11</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">24</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">171</td>
+    <td class="tg-0lax">1510</td>
+    <td class="tg-0lax">primary-tumor</td>
+    <td class="tg-0lax">wdbc</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">18</td>
+    <td class="tg-0lax">31</td>
+    <td class="tg-0lax">18</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">30</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">301</td>
+    <td class="tg-0lax">563</td>
+    <td class="tg-0lax">ozone_ level</td>
+    <td class="tg-0lax">kdd_ el_ nino-small</td>
+    <td class="tg-0lax">Geo-graphical Measurements</td>
+    <td class="tg-0lax">73</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">73</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">307</td>
+    <td class="tg-0lax">4552</td>
+    <td class="tg-0lax">vowel</td>
+    <td class="tg-0lax">Bach Choral Harmony</td>
+    <td class="tg-0lax">Sound Measurements</td>
+    <td class="tg-0lax">13</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">15</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">343</td>
+    <td class="tg-0lax">1094</td>
+    <td class="tg-0lax">white- clover</td>
+    <td class="tg-0lax">Acorns</td>
+    <td class="tg-0lax">Plantation Measurements</td>
+    <td class="tg-0lax">32</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">27</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1 *White- Clover-93&nbsp;&nbsp;+ Tree_ Height <br> 2 *Other Legumes-91&nbsp;&nbsp;+ Acorn_ size</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">375</td>
+    <td class="tg-0lax">4552</td>
+    <td class="tg-0lax">japanese vowels</td>
+    <td class="tg-0lax">Bach Choral Harmony</td>
+    <td class="tg-0lax">Sound Measurements</td>
+    <td class="tg-0lax">15</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">15</td>
+    <td class="tg-0lax">14</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">492</td>
+    <td class="tg-0lax">1464</td>
+    <td class="tg-0lax">newton_ hema</td>
+    <td class="tg-0lax">blood- transfusion service- center</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* cells_ percentage + V4</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">563</td>
+    <td class="tg-0lax">1487</td>
+    <td class="tg-0lax">kdd_ el_ nino-small</td>
+    <td class="tg-0lax">ozone- level- 8hr</td>
+    <td class="tg-0lax">Geo- graphical Measurements</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">73</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">72</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1471</td>
+    <td class="tg-0lax">1490</td>
+    <td class="tg-0lax">eeg-eye-state</td>
+    <td class="tg-0lax">planning relax</td>
+    <td class="tg-0lax">Cardiac EEG Measurements</td>
+    <td class="tg-0lax">15</td>
+    <td class="tg-0lax">13</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">14</td>
+    <td class="tg-0lax">12</td>
+    <td class="tg-0lax">* Class + Class</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">Yes</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1478</td>
+    <td class="tg-0lax">1509</td>
+    <td class="tg-0lax">har</td>
+    <td class="tg-0lax">walking-activity</td>
+    <td class="tg-0lax">Motion patterns</td>
+    <td class="tg-0lax">562</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">561</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1489</td>
+    <td class="tg-0lax">4552</td>
+    <td class="tg-0lax">phoneme</td>
+    <td class="tg-0lax">Bach Choral Harmony</td>
+    <td class="tg-0lax">Sound Measurements</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">15</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">183</td>
+    <td class="tg-0lax">205</td>
+    <td class="tg-0lax">abalone</td>
+    <td class="tg-0lax">sleep</td>
+    <td class="tg-0lax">Animal Profile</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">183</td>
+    <td class="tg-0lax">232</td>
+    <td class="tg-0lax">abalone</td>
+    <td class="tg-0lax">fishcatch</td>
+    <td class="tg-0lax">Animal Profile</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">* Sex&nbsp;&nbsp;+ Sex</td>
+    <td class="tg-0lax">1 * Height + Height <br> 2 * Length + Length1 <br> 3 * Diameter + Length3</td>
+    <td class="tg-0lax">Yes</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">329</td>
+    <td class="tg-0lax">541</td>
+    <td class="tg-0lax">hayes- roth</td>
+    <td class="tg-0lax">socmob</td>
+    <td class="tg-0lax">Citizen Census Data</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">451</td>
+    <td class="tg-0lax">541</td>
+    <td class="tg-0lax">irish</td>
+    <td class="tg-0lax">socmob</td>
+    <td class="tg-0lax">Citizen Census Data</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">483</td>
+    <td class="tg-0lax">492</td>
+    <td class="tg-0lax">iq_ brain_ size</td>
+    <td class="tg-0lax">newton_ hema</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">483</td>
+    <td class="tg-0lax">1464</td>
+    <td class="tg-0lax">iq_ brain_ size</td>
+    <td class="tg-0lax">blood- trans- fusion- service-center</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">492</td>
+    <td class="tg-0lax">679</td>
+    <td class="tg-0lax">newton_ hema</td>
+    <td class="tg-0lax">rmftsa_ sleepdata</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1483</td>
+    <td class="tg-0lax">1509</td>
+    <td class="tg-0lax">ldpa</td>
+    <td class="tg-0lax">walking- activity</td>
+    <td class="tg-0lax">Motion patterns</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">* Class + Class</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">212</td>
+    <td class="tg-0lax">liver- disorders</td>
+    <td class="tg-0lax">diabetes_ numeric</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">212</td>
+    <td class="tg-0lax">492</td>
+    <td class="tg-0lax">diabetes_ numeric</td>
+    <td class="tg-0lax">newton_ hema</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">212</td>
+    <td class="tg-0lax">679</td>
+    <td class="tg-0lax">diabetes_ numeric</td>
+    <td class="tg-0lax">rmftsa_ sleepdata</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+</tbody>
+</table>
+
+<br>
+
+<h3>Manual Analysis</h3>
+<p>The final decision to decide whether two datasets are actually related or no, which is the information in the 'rel?' column in <a href="#table_false_negatives"><i>Table 1</i></a>, was based on the detailed scrutinisation of the datasets and their attributes by one of the authors. We summarise our commentary which led to our final verdict about each pair in the sample as follows:
+
+<ul>
+
+<li> <b>DS 8 and 1097:</b> Liver-disorders is about liver disorders based on blood measurements, and the ICU is based on non-blood measurements related to intensive care patients with more attributes about patient demographics. Here the two datasets were too broadly classified together in the same subject-area as they do not contain related information in their attributes.
+
+<li> <b>DS 10 and 1524:</b> lymph is about lymphography measurements while vertebra-column has unrelated measurements about orthopaedic patients.  Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 18 and 1038:</b> mfeat-morphological is about handwritten numerals with 7 attributes mainly about different aggregate dimensions of handwritten characters. While gina_agnostic is also about 2 digits written numbers instead of one with more than 900 attributes referring to digits pixel maps. Both datasets model the same subject-area but using different measurements for different entities.
+
+<li> <b>DS 23 and 329:</b> Cmc is about contraceptive usage by citizens in Indonesia with demographic and socio-economic characteristics of married couples. Hayes-roth is about individual persons demographics. Only 1 attribute was in common between the datasets, although many other attributes had similar attribute content but unrelated attribute names. The predicted similarity was in the range of 0.3-0.4 so it was a borderline pair that was filtered out.
+
+<li> <b>DS 25 and 1510:</b> colic is about surgeries on horses and measurements of horse conditions, wdbc talks about breast cancer and shape and texture measurements. As the second dataset does not have meaningful attribute names, we can not confirm the semantic relationships between attributes, but a few numeric attributes had intersecting data but their names were not coinciding so it reduced the similarity coefficient.
+
+<li> <b>DS 34 and 43:</b> postoperative-patient-data  is about postoperative actions taken on patients after surgery and measures body temperatures, while haberman  is about patients who had surgery of breast cancer and their survival rates. No related attributes with intersecting values exist.
+
+<li> <b>DS 34 and 222:</b> Postoperative-patient-data is about postoperative actions taken on patients after surgery and measures body temperatures, while echoMonths is about patients who had a heart attack and their survival rates based on heart measurements.  No related attributes with intersecting values exist.
+
+<li> <b>DS 55 and 1510:</b> hepatitis is about hepatitis patients and liver function tests, wdbc talks about breast cancer and shape and texture measurements. 1 attribute coincidently has a similar numeric distribution with the other dataset.
+
+<li> <b>DS 150 and 473:</b> covertype is about US forest cover type based on cartographic measurements, while cjs is about tree growth measurements in Canada. Both datasets model the same subject-area but using different measurements for different entities.
+
+<li> <b>DS 171 and 1510:</b> primary-tumor is about patients with different cancer types and the different symptoms they experience, while wdbc is about breast cancer and shape and texture measurements. Both datasets model the same subject-area but using different measurements for different entities.
+
+<li> <b>DS 301 and 563:</b> ozone_level is about forecasting ozone days in the environment with climate measurements modelled as categorical data, while kdd_el_nino-small is about meteorological measurements about oceans.  Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 307 and 4552:</b> vowel is about vowel speech recognition which is based on  features not described by the dataset creator, while BachChoralHarmony is about music information retrieval  and description of musical notes. Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 343 and 1094:</b> white-clover is about description of land area having a specific plant type, and acorns is about a type of fruit and the description of the location of its cultivation. A few attributes coincidently had a similar numeric distribution with the other dataset, but do not have the same semantic meaning. Both datasets model different aspects about the same subject area.
+
+<li> <b>DS 375 and 4552:</b> JapaneseVowels is about vowel speech recognition using sound samples descriptions, and BachChoralHarmony is about music information retrieval  and description of musical notes. Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 492 and 1464:</b> newton_hema  is about cell markup data from cats, and blood-transfusion-service-center is about blood donation measurements. A few attributes coincidently had a similar numeric distribution with the other dataset, but do not have the same semantic meaning.    Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 563 and 1487:</b> kdd_el_nino-small is about meteorological measurements about oceans, while ozone-level-8hr is about forecasting ozone days in the environment with climate numerical measurements. Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 1471 and 1490:</b> eeg-eye-state is about EEG measurement  for a duration of hundreds of seconds using a headset of a single person with eyes open or shut, while planning-relax is about EEG measurements for 5 days which have been transformed using a wavelet packet analysis mechanism which results in different attribute ranges. The only common attribute is the nominal class attribute which model a two-state condition from the subject doing the experiments which resulted in the measurements recorded. The predicted similarity was in the range of 0.3 -0.4 so it was a borderline pair that was filtered out.
+
+<li> <b>DS 1478 and 1509:</b> har is about measurements of movements using inertial measurements, while walking-activity is about movements collected using accelerometer measurements. Both datasets have different measurements of motion which are not intersectable.
+
+<li> <b>DS 1489 and 4552:</b> phoneme is about type of sound recognition whether oral or nasal using normalised measurements of harmonics using energy normalisation which give attributes describing phonemes of speech parts, and BachChoralHarmony is about music information retrieval  and description of musical notes. Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 183 and 205:</b> abalone is about prediction of the age of abalone shellfish based on its physical characteristics, while sleep is about assessment of mammal animals features and the effect of their sleep time on danger from other predators.  No related attributes with intersecting values exist. Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 183 and 232:</b> abalone is about prediction of the age of abalone shellfish based on its physical characteristics, while fishcatch is about the physical characteristics of fish from a lake in Finland. Both datasets are about the same subject-area but they talk about different animals. The problem is that the attributes have different data. For example, `sex’ attribute has three distinct values in one dataset and 2 values in the other. The `height’ also has a different range of values between 0 and 1 for abalone shellfish while it ranges between 14 and 44 for the lake fish dataset. Although some attributes had similar names, all attributes had different values. The predicted similarity was in the range of 0.3 -0.4 so it was a borderline pair that was filtered out.
+
+<li> <b>DS 329 and 541:</b> Hayes-roth is about  individual persons demographics, and socmob is about families and their work occupations.   No related attributes with intersecting values exist.  Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 451 and 541:</b> irish is about  children at school and their educational characteristics, and socmob is about families and their work occupations.   No related attributes with intersecting values exist.  Here the two datasets were too broadly classified together in the same subject-area. Although, both datasets might have similar dataset level meta-features (e.g., number of attributes per type), going to the deeper level of attributes will easily identify that both datasets are unrelated.
+
+<li> <b>DS 483 and 492:</b> iq_brain_size is about brain measurements and IQ between twins, and newton_hema is about cell markup data from cats. A few attributes coincidently had a similar numeric distribution with the other dataset, but do not have the same semantic meaning.    Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 483 and 1464:</b> iq_brain_size is about brain measurements and IQ between twins, and blood-transfusion-service-center is about blood donation measurements. A few attributes coincidently had a similar numeric distribution with the other dataset, but do not have the same semantic meaning.    Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 492 and 679:</b> newton_hema is about cell markup data from cats, and rmftsa_sleepdata is about body measurements in babies during different sleeping states. A few attributes coincidently had a similar numeric distribution with the other dataset, but do not have the same semantic meaning.    Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 1483 and 1509:</b> ldpa is about measurements of movements using position sensors on part of the body, while walking-activity is about movements collected using accelerometer measurements. Both datasets have different measurements of motion which are not intersectable, except for the ‘class’ attribute which is about activity type which might be related. We note here that although the datasets might have identical attribute names (as the attribute names are arbitrary), yet they do not store the same information in their attributes, that is why it is important to combine name-based proximity metrics with value-based metrics.  Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 8 and 212:</b> liver-disorders is about liver disorders based on blood measurements, and diabetes_numeric is about measurements of diabetic c-peptide serum in children. Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 212 and 492:</b> diabetes_numeric is about measurements of diabetic c-peptide serum in children, and newton_hema is about cell markup data from cats. Here the two datasets were too broadly classified together in the same subject-area.
+
+<li> <b>DS 212 and 679:</b> diabetes_numeric is about measurements of diabetic c-peptide serum in children, and rmftsa_sleepdata is about body measurements in babies during different sleeping states. Here the two datasets were too broadly classified together in the same subject-area.
+</ul>
+</p>
+
+
+<h3>Conclusion</h3>
+<p>
+From our analysis, the majority of the cases (<i>90%</i> of the cases) in the sample of false negatives were actually not related and therefore are not supposed to be annotated as related datasets by the human annotators in the experiment. Those were falsely annotated cases due to the fact that the human annotators only had the overall dataset descriptions to judge whether they are related. Many datasets were broadly classified under the same topic although they should have been distinguished. Our automated techniques depending on our proposed proximity models are able to identify more accurately such cases and correctly the related pairs due to the different detailed meta-features collected about the datasets and their attributes.
+</p>
+
+
+<hr>
+
+
+
+
+<h2 id="false_positives">2. False Positives</h2>
+
+<p> We took a random sample of 30 false positive cases from the total 172 false positives. In our experiments we had about 550 actual positive cases. At the threshold of <i>'T=0.4'</i> for the All-Prox model, 172 cases were incorrectly classified as positive cases for schema matching, although they did not belong to the same topical subject-area. We analysed the details of those cases in <a href="#table_false_positives"><i>Table 2</i></a><!--\ref{tab:all_prox_FP_cases_analysis_appendix}-->. Each row in the table lists a dataset pair which had a proximity score above the threshold of <i>'0.4'</i> although they were manually annotated to be not related datasets (i.e., under different topics).</p>
+
+<p>
+In <a href="#table_false_positives"><i>Table 2</i></a><!--\ref{tab:all_prox_FP_cases_analysis_appendix}-->, the columns are as follows:
+
+<ul>
+
+<li> <b>DS1 ID:</b> The OpenML dataset unique identifier for accessing the first dataset's description page. This could be accessed by replacing the `X' symbols at the end of the URL: <i>https://www.openml.org/d/XXXX</i>.
+
+
+<li> <b>DS2 ID:</b> The OpenML unique identifier for the second dataset.
+
+
+<li> <b>DS1 and DS2:</b> The names of the first and second dataset in the pair respectively.
+
+
+<li> <b>DS1 Topic: </b>the subject-area classification for the first dataset in the pair.
+
+
+<li> <b>DS2 Topic: </b>the subject-area classification for the second dataset in the pair.
+
+
+<li> <b>DS 1 no. att and DS 2 no. att:</b> the number of attributes in each dataset respectively.
+
+
+<li> <b>DS 1 no. nom att and DS 2 no. nom att:</b> the number of nominal attributes in each dataset.
+
+
+<li> <b>DS 1 no. num att and DS 2 no. num att:</b> the number of numeric attributes in each dataset.
+
+
+<li> <b>Related Nom Att:</b> A list of nominal attributes from both datasets which have a matching data profile. Each attribute pair start with a `*' symbol followed by the attribute from the first dataset, then the `+' symbol, and finally the matching attribute from the second dataset. Each matching pairs of attributes follow the same structure and start on a new line. 
+
+
+<li> <b>Related Num Att:</b> A list of numeric attributes from both datasets which have a matching data profile. It follows the same structure as the Nom Att M column.
+
+
+<li> <b>Rel?:</b> the final verdict whether the pairs of datasets really fall under the same topical category or not. This is based on manually analysing the attributes in each dataset, and checking if each attribute in the first dataset matches an attribute from the other dataset in terms of their `semantics'. Here we consider the actual meaning and description of each attribute and not just the data profiles. A value of `yes' means that both datasets have many semantically related attributes (a couple or more) and a value of `no' means not. <i>Note: although a dataset pair might have attributes with matching data profiles, yet, the semantic meaning of the attributes might be different based on their description</i>.
+
+</ul>
+</p>
+
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg" id="table_false_positives">
+  <caption><b><i>Table 2:</i></b> A list of randomly selected false-positive dataset pair cases from the All-Prox model in the OpenML experiment.</caption>
+<thead>
+  <tr>
+    <th class="tg-0lax"><b>DS1 ID</b></th>
+    <th class="tg-0lax"><b>DS2 ID</b></th>
+    <th class="tg-0lax"><b>DS1</b></th>
+    <th class="tg-0lax"><b>DS2</b></th>
+    <th class="tg-0lax"><b>DS1 Topic</b></th>
+    <th class="tg-0lax"><b>DS2 Topic</b></th>
+    <th class="tg-0lax"><b>DS 1 no. att</b></th>
+    <th class="tg-0lax"><b>DS 2 no. att</b></th>
+    <th class="tg-0lax"><b>DS 1 no. nom att</b></th>
+    <th class="tg-0lax"><b>DS 2 no. nom att</b></th>
+    <th class="tg-0lax"><b>DS 1 no. num att</b></th>
+    <th class="tg-0lax"><b>DS 2 no. num att</b></th>
+    <th class="tg-0lax"><b>Related Nom Att</b></th>
+    <th class="tg-0lax"><b>Related Num Att</b></th>
+    <th class="tg-0lax"><b>Rel?</b></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0lax">14</td>
+    <td class="tg-0lax">1497</td>
+    <td class="tg-0lax">mfeat-fourier</td>
+    <td class="tg-0lax">wall robot navigation</td>
+    <td class="tg-0lax">Digit Handwriting Recognition</td>
+    <td class="tg-0lax">Robot Motion Measurements</td>
+    <td class="tg-0lax">77</td>
+    <td class="tg-0lax">25</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">76</td>
+    <td class="tg-0lax">24</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1 * Att74 + V18 <br> 2 * Att42 + V1</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">22</td>
+    <td class="tg-0lax">1464</td>
+    <td class="tg-0lax">mfeat-zernike</td>
+    <td class="tg-0lax">blood transfusion service center</td>
+    <td class="tg-0lax">Digit Handwriting Recognition</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">48</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">47</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1 * Att35 + V4 <br> 2 * Att41 + V1 <br> 3 * Att15 + V2</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">24</td>
+    <td class="tg-0lax">492</td>
+    <td class="tg-0lax">mush-room</td>
+    <td class="tg-0lax">newton hema</td>
+    <td class="tg-0lax">Plant profiles</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">23</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">23</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">29</td>
+    <td class="tg-0lax">1466</td>
+    <td class="tg-0lax">credit approval</td>
+    <td class="tg-0lax">cardio-toco-graphy</td>
+    <td class="tg-0lax">Credit Card Applications</td>
+    <td class="tg-0lax">Cardiac EEG Measurements</td>
+    <td class="tg-0lax">16</td>
+    <td class="tg-0lax">36</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">16</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">20</td>
+    <td class="tg-0lax">* A10&nbsp;&nbsp;+ V27</td>
+    <td class="tg-0lax">1 * A8 + V6 <br> 2 * A2 + V9</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">36</td>
+    <td class="tg-0lax">571</td>
+    <td class="tg-0lax">segment</td>
+    <td class="tg-0lax">delta elevators</td>
+    <td class="tg-0lax">Image Pixel Classification</td>
+    <td class="tg-0lax">Aircraft Performance</td>
+    <td class="tg-0lax">20</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">16</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">* Short-line-density-5 + diffDiffClb</td>
+    <td class="tg-0lax">1 * Exgreen-mean + climb <br> 2 * Rate Exred-mean + Altitude</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">43</td>
+    <td class="tg-0lax">1049</td>
+    <td class="tg-0lax">haber-man</td>
+    <td class="tg-0lax">pc4</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">Comput-er Software Defects</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">38</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">34</td>
+    <td class="tg-0lax">* Survival status + c</td>
+    <td class="tg-0lax">* Number of positive axillary nodes detected + LOC COMMENTS</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">43</td>
+    <td class="tg-0lax">1511</td>
+    <td class="tg-0lax">haber-man</td>
+    <td class="tg-0lax">wholesale customers</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">Retail Sales Data</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">* Survival status + Channel</td>
+    <td class="tg-0lax">Number of positive axillary nodes detected + V1</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">43</td>
+    <td class="tg-0lax">4552</td>
+    <td class="tg-0lax">habe-rman</td>
+    <td class="tg-0lax">Bach Choral Harmony</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">Sound Measurements</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">15</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">1 * Survival status + V9 2 * Patients year of operation + V15</td>
+    <td class="tg-0lax">* Age of patient at time of operation + V2</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">222</td>
+    <td class="tg-0lax">1519</td>
+    <td class="tg-0lax">echo Months</td>
+    <td class="tg-0lax">robot failures lp4</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">Robot Motion Measurements</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">91</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">90</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* Epss + V34</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">470</td>
+    <td class="tg-0lax">1095</td>
+    <td class="tg-0lax">profb</td>
+    <td class="tg-0lax">Cereals</td>
+    <td class="tg-0lax">Football Matches</td>
+    <td class="tg-0lax">Food Nutritional Facts</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">16</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">11</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1 * Point spread + sugars <br> 2 * Underdog Points + Carbo</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">568</td>
+    <td class="tg-0lax">1500</td>
+    <td class="tg-0lax">kdd coil 2</td>
+    <td class="tg-0lax">seismic-bumps</td>
+    <td class="tg-0lax">Chemic-al Contamination</td>
+    <td class="tg-0lax">Seismic Measurements</td>
+    <td class="tg-0lax">12</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">* river size + Class</td>
+    <td class="tg-0lax">1 * Concentration 1 + V7 <br> 2 * Concentration 4 + V6</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1030</td>
+    <td class="tg-0lax">1054</td>
+    <td class="tg-0lax">ERA</td>
+    <td class="tg-0lax">mc2</td>
+    <td class="tg-0lax">Employ-ee Test Data</td>
+    <td class="tg-0lax">Comput-er Software Defects</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">40</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">36</td>
+    <td class="tg-0lax">* In2 + CALL PAIRS</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1051</td>
+    <td class="tg-0lax">1097</td>
+    <td class="tg-0lax">cocomo numeric</td>
+    <td class="tg-0lax">ICU</td>
+    <td class="tg-0lax">Software Development Effort</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">21</td>
+    <td class="tg-0lax">15</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">* VEXP + LOC</td>
+    <td class="tg-0lax">1 * ACT EFFORT + ID <br> 2 * LOC + AGE</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1465</td>
+    <td class="tg-0lax">1478</td>
+    <td class="tg-0lax">breast-tissue</td>
+    <td class="tg-0lax">har</td>
+    <td class="tg-0lax">Human Tissue impeda-nce spectrum</td>
+    <td class="tg-0lax">Motion patterns</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">562</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">561</td>
+    <td class="tg-0lax">* Class + Class</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1471</td>
+    <td class="tg-0lax">1476</td>
+    <td class="tg-0lax">eeg-eye-state</td>
+    <td class="tg-0lax">gas-drift</td>
+    <td class="tg-0lax">Cardiac EEG Measurements</td>
+    <td class="tg-0lax">Gas sensing statistics</td>
+    <td class="tg-0lax">15</td>
+    <td class="tg-0lax">129</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">14</td>
+    <td class="tg-0lax">128</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* V6 + V105</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1478</td>
+    <td class="tg-0lax">1597</td>
+    <td class="tg-0lax">har</td>
+    <td class="tg-0lax">credit card</td>
+    <td class="tg-0lax">Motion patterns</td>
+    <td class="tg-0lax">Credit Card Transactions</td>
+    <td class="tg-0lax">562</td>
+    <td class="tg-0lax">31</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">561</td>
+    <td class="tg-0lax">30</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* V145 + V26</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1511</td>
+    <td class="tg-0lax">1516</td>
+    <td class="tg-0lax">whole-sale customers</td>
+    <td class="tg-0lax">robot failures lp1</td>
+    <td class="tg-0lax">Retail Sales Data</td>
+    <td class="tg-0lax">Robot Motion Measurements</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">91</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">90</td>
+    <td class="tg-0lax">* Region + Class</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1524</td>
+    <td class="tg-0lax">4552</td>
+    <td class="tg-0lax">vertebra-column</td>
+    <td class="tg-0lax">Bach- Choral- Harmony</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">Sound Measurements</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">15</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">* Class + V14</td>
+    <td class="tg-0lax">* V1 + V2</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">18</td>
+    <td class="tg-0lax">1495</td>
+    <td class="tg-0lax">mfeat morphol-ogical</td>
+    <td class="tg-0lax">qualitat-ive bankruptcy</td>
+    <td class="tg-0lax">Digit Handwriting Recognition</td>
+    <td class="tg-0lax">Bankru-ptcy Evaluation</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* Att1 + V3</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">43</td>
+    <td class="tg-0lax">1462</td>
+    <td class="tg-0lax">haber-man</td>
+    <td class="tg-0lax">banknote authent-ication</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">Bank-note Recog-nition</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">* Survival status + Class</td>
+    <td class="tg-0lax">* Number of positive axillary nodes detected + V3</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">151</td>
+    <td class="tg-0lax">1526</td>
+    <td class="tg-0lax">electric-ity</td>
+    <td class="tg-0lax">wall-robot-naviga-tion</td>
+    <td class="tg-0lax">Product Pricing</td>
+    <td class="tg-0lax">Robot Motion Measurements</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* Period + V2</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">196</td>
+    <td class="tg-0lax">230</td>
+    <td class="tg-0lax">autoMpg</td>
+    <td class="tg-0lax">machine cpu</td>
+    <td class="tg-0lax">Car</td>
+    <td class="tg-0lax">CPU Performance Data</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1 * Displacement + MYCT <br> 2 * Horsepower – CACH</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">329</td>
+    <td class="tg-0lax">1511</td>
+    <td class="tg-0lax">hayes-roth</td>
+    <td class="tg-0lax">whole-sale custom-ers</td>
+    <td class="tg-0lax">Citizen Census Data</td>
+    <td class="tg-0lax">Retail Sales Data</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">* Hobby + Region</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1489</td>
+    <td class="tg-0lax">1526</td>
+    <td class="tg-0lax">phoneme</td>
+    <td class="tg-0lax">wall-robot-naviga-tion</td>
+    <td class="tg-0lax">Sound Measurements</td>
+    <td class="tg-0lax">Robot Motion Measurements</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* V5 + V4</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1499</td>
+    <td class="tg-0lax">1500</td>
+    <td class="tg-0lax">seeds</td>
+    <td class="tg-0lax">seismic-bumps</td>
+    <td class="tg-0lax">Plant Measurements</td>
+    <td class="tg-0lax">Seismic Measurements</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">All attributes</td>
+    <td class="tg-0lax">All attributes</td>
+    <td class="tg-0lax">Yes</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1500</td>
+    <td class="tg-0lax">1523</td>
+    <td class="tg-0lax">seismic-bumps</td>
+    <td class="tg-0lax">vertebra-column</td>
+    <td class="tg-0lax">Seismic Measurements</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">* Class + Class</td>
+    <td class="tg-0lax">* V1 + V2</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1509</td>
+    <td class="tg-0lax">1525</td>
+    <td class="tg-0lax">walking-activity</td>
+    <td class="tg-0lax">wall-robot-naviga-tion</td>
+    <td class="tg-0lax">Motion patterns</td>
+    <td class="tg-0lax">Robot Motion Measurements</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* V4 + V2</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">183</td>
+    <td class="tg-0lax">225</td>
+    <td class="tg-0lax">abalone</td>
+    <td class="tg-0lax">puma-8NH</td>
+    <td class="tg-0lax">Animal Profile</td>
+    <td class="tg-0lax">Robot Motion Measurements</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1* Height + tau1 <br> * Viscera weight + tau2 <br> 3 * Whole weight + thetad2</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">205</td>
+    <td class="tg-0lax">212</td>
+    <td class="tg-0lax">sleep</td>
+    <td class="tg-0lax">diabetes numeric</td>
+    <td class="tg-0lax">Animal Profile</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* total sleep + age</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">225</td>
+    <td class="tg-0lax">1462</td>
+    <td class="tg-0lax">puma-8NH</td>
+    <td class="tg-0lax">banknote-authent-ication</td>
+    <td class="tg-0lax">Robot Motion Measurements</td>
+    <td class="tg-0lax">Bank-note Recognition</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1 * Thetadd3 + V3 <br> 2 * Thetad1 + V4 <br> 3 * Thetadd3 + V2</td>
+    <td class="tg-0lax">No</td>
+  </tr>
+</tbody>
+</table>
+
+<br>
+
+<h3>Manual Analysis</h3>
+
+<p>The final decision to decide whether two datasets are actually related or not, which is the information in the `rel?' column in <a href="#table_false_positives"><i>Table 2</i></a><!--\ref{tab:all_prox_FP_cases_analysis_appendix}-->, was based on the detailed scrutinisation of the datasets and their attributes by one of the authors. We summarise our commentary which led to our final verdict about each pair in the sample as follows:
+
+<ul>
+
+<li> <b>DS 14 and 1497:</b> The datasets have multiple attributes in common with quite similar numeric distributions, we only report two of the strongest.
+
+<li> <b>DS 22 and 1464:</b> The second smaller dataset by coincidence has most of its attributes highly matching with numeric attributes from the much larger first dataset.
+
+<li> <b>DS 24 and 492:</b> Many partially matching attributes led to this error passing the 0.4 similarity threshold. It is a consequence of lower threshold levels.
+
+<li> <b>DS 29 and 1466:</b> The attributes coincidently contain similar profiles of information. For example, 2 nominal attributes had similar value distributions and each had two values and both had 2 distinct values only, however, they have different semantic meanings in their context. Many numeric attributes also coincidently had very similar numeric distribution.
+
+<li> <b>DS 36 and 571:</b> The datasets have multiple attributes which are coincidently common with quite similar nominal profile and numeric distributions, we only report three of the strongest.
+
+<li> <b>DS 43 and 1049:</b> Some nominal and numeric attributes with similar profiles. Haberman has a few attributes with very common data profiles (e.g., binary values) which match with attributes in larger datasets with more attributes.
+
+<li> <b>DS 43 and 1511:</b> Some nominal and numeric attributes with similar profiles. Haberman has a few attributes with very common data profiles (e.g., binary values) which match with attributes in larger datasets with more attributes.
+
+<li> <b>DS 43 and 4552:</b> Some nominal and numeric attributes with similar profiles. Haberman has a few attributes with very common data profiles (e.g., binary values) which match with attributes in larger datasets with more attributes.
+
+<li> <b>DS 222 and 1519:</b> Many partially matching attributes led to this error passing the 0.4 similarity threshold. It is a consequence of lower threshold levels.
+
+<li> <b>DS 470 and 1095:</b> A few numeric attributes had similar profiles across the datasets.
+
+<li> <b>DS 568 and 1500:</b> The datasets have multiple attributes which are coincidently common with quite similar nominal profile and numeric distributions, we only report three of the strongest.
+
+<li> <b>DS 1030 and 1054:</b> Some nominal attributes with similar profiles.
+
+<li> <b>DS 1051 and 1097:</b> The datasets have some attributes which coincidently have quite similar nominal profile and numeric distributions.
+
+<li> <b>DS 1465 and 1478:</b> Many partially matching attributes led to this error passing the 0.4 similarity threshold. It is a consequence of lower threshold levels.
+
+<li> <b>DS 1471 and 1476:</b> A few numeric attributes had similar profiles between a small dataset and a large dataset.
+
+<li> <b>DS 1478 and 1597:</b> A few numeric attributes had similar profiles between a small dataset and a large dataset.
+
+<li> <b>DS 1511 and 1516:</b> Many partially matching attributes led to this error passing the 0.4 similarity threshold. It is a consequence of lower threshold levels.
+
+<li> <b>DS 1524 and 4552:</b> Some nominal and numeric attributes with similar profiles. The matching nominal attributes have the same number of distinct values (binary) and nearly identical distribution of values (50\% for each value). Numeric attributes had matching numeric distributions.
+
+<li> <b>DS 18 and 1495:</b> A few nominal attributes had similar profiles.
+
+<li> <b>DS 43 and 1462:</b> The datasets have some attributes which coincidently have quite similar nominal profile and numeric distributions.
+
+<li> <b>DS 151 and 1526:</b> A few numeric attributes had similar profiles.
+
+<li> <b>DS 196 and 230:</b> A few numeric attributes had similar profiles.
+
+<li> <b>DS 329 and 1511:</b> A few nominal attributes had similar profiles.
+
+<li> <b>DS 1489 and 1526:</b> A few numeric attributes had similar profiles.
+
+<li> <b>DS 1499 and 1500:</b> Both datasets store the same data, but they were falsely annotated by the OpenML contributors with different metadata and description. This is a case where our automated techniques can detect such human errors.
+
+<li> <b>DS 1500 and 1523:</b> The datasets have some attributes which coincidently have quite similar nominal profile and numeric distributions.
+
+<li> <b>DS 1509 and 1525:</b> A few numeric attributes had similar profiles.
+
+<li> <b>DS 183 and 225:</b> A few numeric attributes had similar profiles.
+
+<li> <b>DS 205 and 212:</b> The datasets have some attributes which coincidently have quite similar nominal profiles.
+
+<li> <b>DS 225 and 1462:</b> The datasets have some attributes which coincidently have quite similar nominal profiles.
+</ul>
+</p>
+
+<h3>Conclusion</h3>
+<p>From our analysis, the majority of the cases in the sample of false positives were true false positives which was caused by coincidently matching data profiles of some of the attributes across different datasets. As we have selected a threshold of `<i>0.4</i>' we expect having such cases of false positives but we try to minimise them as much as possible to improve the efficiency gain performance of our pre-filtering approach. Our approach was also able to detect human errors in annotating the descriptions of datasets in the cases of datasets 1499 and 1500. Those datasets were incorrectly annotated different descriptions about different topics although they contain duplicate data about the same subject and having the same instances. Therefore, our approach can actually support human annotations by detecting such errors and highlighting them to the DL's data wrangler.</p>
+
+<hr>
+
+<h2 id="true_positives">3. True Positives</h2>
+
+<p>In this section, we present a sample of the true positive cases our proximity-mining-based approach was successful in detecting. Those were pairs of datasets which were positively proposed by our approach and were actually belonging to the same topical subject-area. We took a random sample of 30 true positive cases from the total 469 cases. The actual positives were 550 cases but not all of them were detected using our techniques at a threshold of `<i>T=0.4</i>' for the All-Prox model (a discussion of the cases that were missed are presented in the <a href="#false_negatives">false negatives section</a>. We demonstrate using the sample cases the underlying workings of our approach by presenting the summary of those pairs and their matching attributes.</p>
+
+<p>We analysed the details of those cases in <a href="#table_true_positives"><i>Table 3</i></a><!--\ref{tab:all_prox_TP_cases_analysis_appendix}-->. Each row in the table lists a dataset pair which had a proximity score above the threshold of $0.4$ and which were manually annotated to be datasets belonging to the same topical subject-area.  Our goal is to highlight how our approach detected that each pair were related. We present the related attributes which were found.</p>
+
+<p>In <a href="#table_true_positives"><i>Table 3</i></a><!--\ref{tab:all_prox_TP_cases_analysis_appendix}-->, the columns are as follows:
+<ul>
+
+<li> <b>DS1 ID:</b> The OpenML dataset unique identifier for accessing the first dataset's description page. This could be accessed by replacing the `X' symbols at the end of the URL: <i>https://www.openml.org/d/XXXX</i>.
+
+
+<li> <b>DS2 ID:</b> The OpenML unique identifier for the second dataset.
+
+
+<li> <b>DS1 and DS2:</b> The names of the first and second dataset in the pair respectively.
+
+
+<li> <b>Topic: </b>the common subject-area classification for both datasets in the pair.
+
+
+<li> <b>DS1 and DS2 no. att:</b> the number of attributes in each dataset respectively.
+
+
+<li> <b>DS1 and DS2 no. nom att</b> the number of nominal attributes in each dataset.
+
+
+<li> <b>DS1 and DS2 no. num att:</b> the number of numeric attributes in each dataset.
+
+
+<li> <b>Related Nom Att:</b> A list of nominal attributes from both datasets which have a matching data profile. Each attribute pair start with a `*' symbol followed by the attribute from the first dataset, then the `+' symbol, and finally the matching attribute from the second dataset. Each matching pairs of attributes follow the same structure and start on a new line. 
+
+
+<li> <b>Related Num Att:</b> A list of numeric attributes from both datasets which have a matching data profile. It follows the same structure as the Related Nom Att column.
+
+</ul>
+</p>
+
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg" id="table_true_positives">
+<caption><b><i>Table 3:</i></b> A list of randomly selected true-positive dataset pair cases from the All-Prox model in the OpenML experiment.</caption>
+<thead>
+  <tr>
+    <th class="tg-0lax"><b>DS1 ID</b></th>
+    <th class="tg-0lax"><b>DS2 ID</b></th>
+    <th class="tg-0lax"><b>DS1</b></th>
+    <th class="tg-0lax"><b>DS2</b></th>
+    <th class="tg-0lax"><b>Topic</b></th>
+    <th class="tg-0lax"><b>DS 1 no. att</b></th>
+    <th class="tg-0lax"><b>DS 2 no. att</b></th>
+    <th class="tg-0lax"><b>DS1 no. nom att</b></th>
+    <th class="tg-0lax"><b>DS2 no. nom att</b></th>
+    <th class="tg-0lax"><b>DS1 no. num att</b></th>
+    <th class="tg-0lax"><b>DS2 no. num att</b></th>
+    <th class="tg-0lax"><b>Related Nom Att</b></th>
+    <th class="tg-0lax"><b>Related Num Att</b></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">483</td>
+    <td class="tg-0lax">liver-disorders</td>
+    <td class="tg-0lax">iq brain size</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">* Selector + ORDER</td>
+    <td class="tg-0lax">1 * alkphos + WEIGHT2 <br> 2 * mcv + FIQ</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">12</td>
+    <td class="tg-0lax">20</td>
+    <td class="tg-0lax">mfeat-factors</td>
+    <td class="tg-0lax">mfeat-pixel</td>
+    <td class="tg-0lax">Digit Handwriting Recognition</td>
+    <td class="tg-0lax">217</td>
+    <td class="tg-0lax">241</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">241</td>
+    <td class="tg-0lax">214</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* Class + class</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">16</td>
+    <td class="tg-0lax">32</td>
+    <td class="tg-0lax">mfeat-karhunen</td>
+    <td class="tg-0lax">pendigits</td>
+    <td class="tg-0lax">Digit Handwriting Recognition</td>
+    <td class="tg-0lax">65</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">64</td>
+    <td class="tg-0lax">16</td>
+    <td class="tg-0lax">* Class + class</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">16</td>
+    <td class="tg-0lax">1042</td>
+    <td class="tg-0lax">mfeat-karhunen</td>
+    <td class="tg-0lax">gina prior</td>
+    <td class="tg-0lax">Digit Handwriting Recognition</td>
+    <td class="tg-0lax">65</td>
+    <td class="tg-0lax">785</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">263</td>
+    <td class="tg-0lax">64</td>
+    <td class="tg-0lax">522</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">22</td>
+    <td class="tg-0lax">1501</td>
+    <td class="tg-0lax">mfeat-zernike</td>
+    <td class="tg-0lax">semeion</td>
+    <td class="tg-0lax">Digit Handwriting Recognition</td>
+    <td class="tg-0lax">48</td>
+    <td class="tg-0lax">257</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">257</td>
+    <td class="tg-0lax">47</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* Class + class</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">25</td>
+    <td class="tg-0lax">1523</td>
+    <td class="tg-0lax">colic</td>
+    <td class="tg-0lax">vertebra-column</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">28</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">20</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">* surgical lesion + Class</td>
+    <td class="tg-0lax">1 * pulse – V12 <br> 2 *packed cell volume + V4</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">55</td>
+    <td class="tg-0lax">222</td>
+    <td class="tg-0lax">hepatitis</td>
+    <td class="tg-0lax">echo-Months</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">20</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">14</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">1 * ANTIVIRALS + pericardial <br> 2 * SPIDERS + still alive <br> 3 * FATIGUE + alive at 1</td>
+    <td class="tg-0lax">1 * ALBUMIN + lvdd <br> 2 * AGE + age</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">150</td>
+    <td class="tg-0lax">1596</td>
+    <td class="tg-0lax">covertype</td>
+    <td class="tg-0lax">covertype</td>
+    <td class="tg-0lax">Plantation Measurements</td>
+    <td class="tg-0lax">55</td>
+    <td class="tg-0lax">55</td>
+    <td class="tg-0lax">45</td>
+    <td class="tg-0lax">45</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">Many with the same name</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">183</td>
+    <td class="tg-0lax">1557</td>
+    <td class="tg-0lax">abalone</td>
+    <td class="tg-0lax">abalone</td>
+    <td class="tg-0lax">Animal Profile</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">* Sex + V1</td>
+    <td class="tg-0lax">1 * Length + V32 <br> 2 * Diameter + V23 <br> 3 * Shell weight + V84 <br> Length + V2</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">187</td>
+    <td class="tg-0lax">287</td>
+    <td class="tg-0lax">wine</td>
+    <td class="tg-0lax">wine quality</td>
+    <td class="tg-0lax">Food Nutritional Facts</td>
+    <td class="tg-0lax">14</td>
+    <td class="tg-0lax">12</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">13</td>
+    <td class="tg-0lax">11</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1 * Alcohol + alcohol2 <br> 2* Nonflavanoid phenols + citric.acid <br> 3 * Ash + pH <br> 4 * Color intensity + fixed acidity</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">224</td>
+    <td class="tg-0lax">1523</td>
+    <td class="tg-0lax">breast-Tumor</td>
+    <td class="tg-0lax">vertebra-column</td>
+    <td class="tg-0lax">Disease</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">8</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">* deg-malig + Class</td>
+    <td class="tg-0lax">* class + V2</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">307</td>
+    <td class="tg-0lax">1489</td>
+    <td class="tg-0lax">vowel</td>
+    <td class="tg-0lax">phoneme</td>
+    <td class="tg-0lax">Sound Measurements</td>
+    <td class="tg-0lax">13</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">10</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1 * Feature 4 + V42 <br> 2 * Feature 2 + V5</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">329</td>
+    <td class="tg-0lax">382</td>
+    <td class="tg-0lax">hayes-roth</td>
+    <td class="tg-0lax">ipums la 97-small</td>
+    <td class="tg-0lax">Citizen Census Data</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">61</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">61</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">354</td>
+    <td class="tg-0lax">1567</td>
+    <td class="tg-0lax">poker</td>
+    <td class="tg-0lax">poker-hand</td>
+    <td class="tg-0lax">Poker Hands</td>
+    <td class="tg-0lax">11</td>
+    <td class="tg-0lax">11</td>
+    <td class="tg-0lax">11</td>
+    <td class="tg-0lax">11</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">1 * X9 + V72 <br> 2 * X7 + V53 <br> 3 * X5 + V9</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">378</td>
+    <td class="tg-0lax">451</td>
+    <td class="tg-0lax">ipums la 99-small</td>
+    <td class="tg-0lax">irish</td>
+    <td class="tg-0lax">Citizen Census Data</td>
+    <td class="tg-0lax">61</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">60</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">1 * Sex + Sex <br> 2 * schltype + Type school</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">382</td>
+    <td class="tg-0lax">534</td>
+    <td class="tg-0lax">ipums la 97-small</td>
+    <td class="tg-0lax">cps 85 wages</td>
+    <td class="tg-0lax">Citizen Census Data</td>
+    <td class="tg-0lax">61</td>
+    <td class="tg-0lax">11</td>
+    <td class="tg-0lax">61</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">1 * workedyr + MARR <br> 2 * SEX + sex <br> 3 * yrlastwk + OCCUPATION</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">451</td>
+    <td class="tg-0lax">1590</td>
+    <td class="tg-0lax">irish</td>
+    <td class="tg-0lax">adult</td>
+    <td class="tg-0lax">Citizen Census Data</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">15</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">1 * Sex + sex <br> 2 * Leaving Certificate + class</td>
+    <td class="tg-0lax">* Prestige score + age</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">483</td>
+    <td class="tg-0lax">1093</td>
+    <td class="tg-0lax">iq brain size</td>
+    <td class="tg-0lax">Brainsize</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">7</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">* SEX + Gender</td>
+    <td class="tg-0lax">1 * FIQ + PIQ <br> 2 * WEIGHT + Weight</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">483</td>
+    <td class="tg-0lax">1097</td>
+    <td class="tg-0lax">iq brain size</td>
+    <td class="tg-0lax">ICU</td>
+    <td class="tg-0lax">Health Measurements</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">21</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">17</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">1 * ORDER + INF <br> 2 * SEX + SEX</td>
+    <td class="tg-0lax">* WEIGHT + HRA</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">570</td>
+    <td class="tg-0lax">575</td>
+    <td class="tg-0lax">kdd coil 3</td>
+    <td class="tg-0lax">kdd coil 4</td>
+    <td class="tg-0lax">Chemical Contamination</td>
+    <td class="tg-0lax">12</td>
+    <td class="tg-0lax">12</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">9</td>
+    <td class="tg-0lax">All attributes</td>
+    <td class="tg-0lax">All attributes</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1030</td>
+    <td class="tg-0lax">1035</td>
+    <td class="tg-0lax">ERA</td>
+    <td class="tg-0lax">ESL</td>
+    <td class="tg-0lax">Employee Test Data</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* out1 + out1</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1038</td>
+    <td class="tg-0lax">1501</td>
+    <td class="tg-0lax">gina agnostic</td>
+    <td class="tg-0lax">semeion</td>
+    <td class="tg-0lax">Digit Handwriting Recognition</td>
+    <td class="tg-0lax">971</td>
+    <td class="tg-0lax">257</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">257</td>
+    <td class="tg-0lax">970</td>
+    <td class="tg-0lax">0</td>
+    <td class="tg-0lax">* label + V14</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1049</td>
+    <td class="tg-0lax">1071</td>
+    <td class="tg-0lax">pc4</td>
+    <td class="tg-0lax">mw1</td>
+    <td class="tg-0lax">Computer Software Defects</td>
+    <td class="tg-0lax">38</td>
+    <td class="tg-0lax">38</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">34</td>
+    <td class="tg-0lax">34</td>
+    <td class="tg-0lax">1 * ESSENTIAL DENSITY + ESSENTIAL DENSITY <br> 2 * c + c <br> 3 * PARAMETER COUNT + PARAMETER COUNT</td>
+    <td class="tg-0lax">1 * DESIGN DENSITY + DESIGN DENSITY <br> 2 * PERCENT COMMENTS + PERCENT COMMENTS <br> 3 * MAINTENANCE SEVERITY + MAINTENANCE SEVERITY</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1050</td>
+    <td class="tg-0lax">1070</td>
+    <td class="tg-0lax">pc3</td>
+    <td class="tg-0lax">kc1-numeric</td>
+    <td class="tg-0lax">Computer Software Defects</td>
+    <td class="tg-0lax">38</td>
+    <td class="tg-0lax">95</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">27</td>
+    <td class="tg-0lax">36</td>
+    <td class="tg-0lax">68</td>
+    <td class="tg-0lax">* c + minHALSTEAD ERROR EST</td>
+    <td class="tg-0lax">1 PERCENT COMMENTS + avgNUM OPER-ANDS <br> 2 * LOC COMMENTS + NUMDEFECTS <br> 3 LOC BLANK + maxLOC BLANK</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1053</td>
+    <td class="tg-0lax">1056</td>
+    <td class="tg-0lax">jm1</td>
+    <td class="tg-0lax">mc1</td>
+    <td class="tg-0lax">Computer Software Defects</td>
+    <td class="tg-0lax">22</td>
+    <td class="tg-0lax">39</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">21</td>
+    <td class="tg-0lax">33</td>
+    <td class="tg-0lax">* defects + DESIGN DENSITY</td>
+    <td class="tg-0lax">1 * iv(g) + BRANCH COUNT <br> 2 lOCode + NUM OPERATORS <br> 3 * branchCount + NUMBER OF LINES</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1054</td>
+    <td class="tg-0lax">1056</td>
+    <td class="tg-0lax">mc2</td>
+    <td class="tg-0lax">mc1</td>
+    <td class="tg-0lax">Computer Software Defects</td>
+    <td class="tg-0lax">40</td>
+    <td class="tg-0lax">39</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">6</td>
+    <td class="tg-0lax">36</td>
+    <td class="tg-0lax">33</td>
+    <td class="tg-0lax">* c + MAINTENANCE SEVERITY</td>
+    <td class="tg-0lax">1 * GLOBAL DATA DENSITY + CYCLOMATIC DENSITY <br> 2 * GLOBAL DATA COMPLEXITY + NUM UNIQUE OPERATORS <br> 3 * NUM UNIQUE OPER-ANDS + NUM UNIQUE OPER-ANDS</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1054</td>
+    <td class="tg-0lax">1065</td>
+    <td class="tg-0lax">mc2</td>
+    <td class="tg-0lax">kc3</td>
+    <td class="tg-0lax">Computer Software Defects</td>
+    <td class="tg-0lax">40</td>
+    <td class="tg-0lax">40</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">36</td>
+    <td class="tg-0lax">36</td>
+    <td class="tg-0lax">Many with the same name</td>
+    <td class="tg-0lax">Many with the same name</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1497</td>
+    <td class="tg-0lax">1525</td>
+    <td class="tg-0lax">wall-robot-navi-gation</td>
+    <td class="tg-0lax">wall-robot-navi-gation</td>
+    <td class="tg-0lax">Robot Motion Measurements</td>
+    <td class="tg-0lax">25</td>
+    <td class="tg-0lax">3</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">24</td>
+    <td class="tg-0lax">2</td>
+    <td class="tg-0lax">* Class + class</td>
+    <td class="tg-0lax">1 * V21 + V1 <br> 2 * V18 + V2</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1517</td>
+    <td class="tg-0lax">1518</td>
+    <td class="tg-0lax">robot-failures-lp2</td>
+    <td class="tg-0lax">robot-failures-lp3</td>
+    <td class="tg-0lax">Robot Motion Measurements</td>
+    <td class="tg-0lax">91</td>
+    <td class="tg-0lax">91</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">90</td>
+    <td class="tg-0lax">90</td>
+    <td class="tg-0lax">All attributes</td>
+    <td class="tg-0lax">All attributes</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">1518</td>
+    <td class="tg-0lax">1526</td>
+    <td class="tg-0lax">robot-failures-lp3</td>
+    <td class="tg-0lax">wall-robot-navi-gation</td>
+    <td class="tg-0lax">Robot Motion Measurements</td>
+    <td class="tg-0lax">91</td>
+    <td class="tg-0lax">5</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">1</td>
+    <td class="tg-0lax">90</td>
+    <td class="tg-0lax">4</td>
+    <td class="tg-0lax">* Class + Class</td>
+    <td class="tg-0lax">0</td>
+  </tr>
+</tbody>
+</table>
+
+
+<h3>Manual Analysis</h3>
+<p>We analysed each dataset pairs in <a href="#table_true_positives"><i>Table 3</i></a><!--\ref{tab:all_prox_TP_cases_analysis_appendix}--> and their underlying proximity metrics and attribute similarities in order to deduce the mechanism that led to the correct detection of the pair for schema matching. The observations from our analysis of each pair is as follows:
+
+<ul>
+
+<li> <b>DS 8 and 483:</b> Nominal attributes partially similar, numeric attributes coincidently matching with high similarities of data profiles.
+
+<li> <b>DS 12 and 20:</b> Nominal attributes are very strongly similar, Dataset level similarity (not attribute level similarity) and name-based proximity  were the main deciding factor here as the datasets have similar attribute counts,  similar attribute types and very similar attribute names. This demonstrates the importance of combining both levels of comparison together and different types of similarity measures in a single proximity metric.
+
+<li> <b>DS 16 and 32:</b> Nominal attributes very strongly similar. Maximum aggregation proximity metrics were probably the main deciding factors here.
+
+<li> <b>DS 16 and 1042:</b> Attributes were weakly similar, but  dataset level similarity was the main deciding factor here.
+
+<li> <b>DS 22 and 1501:</b> Nominal attributes very strongly similar. Dataset level and name-based metrics were main deciding factors here as the attributes have quite similar naming scheme.
+
+<li> <b>DS 25 and 1523:</b> Nominal attributes partially similar, numeric attributes coincidently matching.
+
+<li> <b>DS 55 and 222:</b> Many nominal attributes which are partially similar, common numeric attributes found and some coincidently matching. Dataset level similarity and left-skewed attribute level aggregations were the main deciding factors here (as those aggregations give more importance to a few very strongly similar  pairs of attributes).
+
+<li> <b>DS 150 and 1596:</b> They are duplicate datasets about the same instances but with different preprocessing for numerical attributes. As most attributes will store different information based on the preprocessing, the name-based  and dataset level proximity metrics were the main deciding factors here (and attribute level value-based proximity metrics were probably not considered here by the All-Prox proximity model).
+
+<li> <b>DS 183 and 1557:</b> Those are duplicate datasets, but the second has been cleansed, undergone preprocessing of nominal attributes, and the attribute names have been changed to a generic format. It is clear in this case that the positive proximity prediction was mainly due to attribute level analysis of numeric attributes and with less importance given to name-based distances at the attribute level (dataset level name proximity is of course also highly contributing in this case as the names are very similar).
+
+<li> <b>DS 187 and 287:</b> Both datasets are not duplicates and represent data from different sources. They were easily detected as related datasets due to the dataset name, the highly similar numeric attributes using left-skewed distributions and maximum aggregations, and the dataset level profile.
+
+<li> <b>DS 224 and 1523:</b> Partially matching nominal and numeric attributes. Similar dataset level profiles was main deciding factor due to similar number of instances and attributes.
+
+<li> <b>DS 307 and 1489:</b> A combination of attribute level aggregations considering maximum attribute name similarity (where 'class' is a common attribute) and left-skewed aggregations of attribute level data profiles considering the partially matching numeric attributes led to the detection of relatedness between those datasets.
+
+<li> <b>DS 329 and 382:</b> Although no common data profile of attributes, there was still common attributes based on names (with different data though) like 'marital_status' and 'marst' which led to high similarity of maximum attribute name aggregations. The dataset level profile had a higher than average similarity too.
+
+<li> <b>DS 354 and 1567:</b> Both are duplicated datasets but the the first is a heavily preprocessed version with changed nominal categorisations, and different normalisations of values. They were easily detected as related datasets using their dataset level proximity metrics and left-skewed attribute level similarities.
+
+<li> <b>DS 378 and 451:</b> Very similar nominal attributes with similar data were the main deciding factors.
+
+<li> <b>DS 382 and 534:</b> Nominal attributes which are similar led to the overall similarity of the datasets.
+
+<li> <b>DS 451 and 1590:</b> Similar nominal attributes, numeric attributes coincidently matching.
+
+<li> <b>DS 483 and 1093:</b> Both datasets contain both nominal and numeric attributes with similar data and names.
+
+<li> <b>DS 483 and 1097:</b> Nominal attributes have partially similar data profiles, numeric attributes coincidently matching. The dataset profiles are similar too.
+
+<li> <b>DS 570 and 575:</b> They are datasets storing the same information about different instances. Our proximity mining algorithm was able to detect that both datasets store related information although they had slight differences in data profiles. Our proposed approximate proximity metrics are able to detect such kind of similarities using a combination of different types of metadata using names or overall dataset level profiles.
+
+<li> <b>DS 1030 and 1035:</b> Similar dataset level and attribute level data profiles and names.
+
+<li> <b>DS 1038 and 1501:</b> Although the datasets are quite different in terms of their overall dataset profile, they still had relative similarity in terms of overall number of attributes and number of instances. This, alongside the fact that the names are generically numbered using common namings in both datasets helped detect their relatedness.
+
+<li> <b>DS 1049 and 1071:</b> They are datasets storing the same information about different instances. Our proximity mining algorithm was able to detect that both datasets store related information although they had slight differences in data profiles. The approximate proximity metrics are able to detect such kind of similarities.
+
+<li> <b>DS 1050 and 1070:</b> Multiple similar nominal and numeric attributes.
+
+<li> <b>DS 1053 and 1056:</b> Multiple similar numeric attributes. Dataset level profile similarity also contributed to the correct detection of relatedness.
+
+<li> <b>DS 1054 and 1056:</b> Multiple similar nominal and numeric attributes.
+
+<li> <b>DS 1054 and 1065:</b> They are datasets storing the same information about different instances. Although the datasets had very different data profiles for each attribute, still the name-based attribute level proximity metrics were able to effectively detect that those datasets are holding related data. Left-skewed attribute level aggregations also effectively detected very high similarity in a few set of attribute pairs.
+
+<li> <b>DS 1497 and 1525:</b> Most of the attributes in the dataset with smaller number of attributes had highly similar attributes in the bigger dataset.
+
+<li> <b>DS 1517 and 1518:</b> Both datasets contain both nominal and numeric attributes with similar data and names.
+
+<li> <b>DS 1518 and 1526:</b> The attribute level names were identical between the smaller dataset and the larger dataset. The maximum aggregation for attribute level similarity had a high score due to the very similar nominal attribute. Many numeric attributes had slight similarity in their data profiles too, but not too strong.
+</ul>
+</p>
+
+<h3>Conclusion</h3>
+<p>From our observations, we can conclude that different types of proximity metrics are complementary and are important for improving the performance of schema matching pre-filtering. Both attribute level and dataset level proximity metrics were important deciding factors for detecting related datasets. This was seen in cases where we can not only rely on attribute level value-based proximity metrics, including duplicate datasets which have heavily transformed and preprocessed attribute values. In such cases, the dataset level proximity metrics and name-based proximity metrics are the main deciding factors to propose such pairs of datasets for further schema matching. Also, name-based proximity metrics in combination with values-based metrics were both important in deciding whether a pair of datasets are related and should be analysed with schema matching. In some cases, having a skewed aggregation proximity metric  or a maximum aggregation proximity metric for attribute level similarities supported in detecting related datasets. This demonstrates the importance of using different aggregation techniques for attribute level proximity metrics.</p>
+
+<hr>
+
+<p style="text-align:center;"><a href="#intro">Return to top</a></p>
+
+</body>
+
+</html>
